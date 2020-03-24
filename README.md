@@ -1,7 +1,7 @@
 # Terraform NetApp ElementSW Provider
 
-This is the repository for the Terraform NetApp ElementSW Provider, which one can use
-with Terraform to work with NetApp HCI or SolidFire storage clusters.
+This is the repository for the Terraform NetApp ElementSW Provider, which can be used
+with Terraform to configure resources on NetApp HCI or SolidFire storage clusters.
 
 For general information about Terraform, visit the [official
 website][tf-website] and the [GitHub project page][tf-github].
@@ -27,23 +27,23 @@ conflicts if the rule is not respected outside of Terraform.
 
 # Using the Provider
 
-The current version of this provider requires Terraform v0.12 or higher to
+The current version of this provider requires Terraform 0.12 or higher to
 run.
 
 You will need to build the provider before being able to use it
-(see [the section below](#building-the-provider)
+(see [the section below](#building-the-provider))
 
 Note that you need to run `terraform init` to fetch the provider before
 deploying.
 
-## Full Provider Documentation
+## Provider Documentation
 
 <TBD> The provider is documented [here][tf-elementsw-docs].
 Check the provider documentation for details on
 entering your connection information and how to get started with writing
 configuration for NetApp ElementSW resources.
 
-[tf-elementsw-docs]: https://www.terraform.io/docs/providers/netapp/elementsw/index.html
+[tf-elementsw-docs](website/docs/index.html.markdown)
 
 ### Controlling the provider version
 
@@ -54,7 +54,7 @@ already.
 The syntax is as follows:
 
 ```hcl
-provider "elementsw" {
+provider "netapp-elementsw" {
   version = "~> 1.1"
   ...
 }
@@ -68,6 +68,24 @@ more][provider-vc] on provider version control.
 
 # Building The Provider
 
+## Prerequisites
+
+If you wish to work on the provider, you'll first need [Go][go-website]
+installed on your machine (version 1.9+ is **required**). You'll also need to
+correctly setup a [GOPATH][gopath], as well as adding `$GOPATH/bin` to your
+`$PATH`.
+
+[go-website]: https://golang.org/
+[gopath]: http://golang.org/doc/code.html#GOPATH
+
+The following go packages are required to build the provider:
+```
+go get github.com/fatih/structs
+go get github.com/hashicorp/terraform
+go get github.com/sirupsen/logrus
+go get github.com/x-cray/logrus-prefixed-formatter
+```
+
 ## Cloning the Project
 
 First, you will want to clone the repository to
@@ -76,7 +94,7 @@ First, you will want to clone the repository to
 ```sh
 mkdir -p $GOPATH/src/github.com/netapp
 cd $GOPATH/src/github.com/netapp
-git clone git@github.com:netapp/terraform-provider-netapp-elementsw
+git clone https://github.com/NetApp/terraform-provider-netapp-elementsw.git
 ```
 
 ## Running the Build
@@ -108,14 +126,6 @@ new issue.
 
 [gh-issues]: https://github.com/netapp/terraform-provider-netapp-elementsw/issues
 [gh-prs]: https://github.com/netapp/terraform-provider-netapp-elementsw/pulls
-
-If you wish to work on the provider, you'll first need [Go][go-website]
-installed on your machine (version 1.9+ is **required**). You'll also need to
-correctly setup a [GOPATH][gopath], as well as adding `$GOPATH/bin` to your
-`$PATH`.
-
-[go-website]: https://golang.org/
-[gopath]: http://golang.org/doc/code.html#GOPATH
 
 See [Building the Provider](#building-the-provider) for details on building the provider.
 
@@ -159,3 +169,69 @@ make testacc TESTARGS="-run=TestAccElementSwVolume"
 This following example would run all of the acceptance tests matching
 `TestAccElementSwVolume`. Change this for the specific tests you want to
 run.
+
+# Walkthrough example
+
+### Installing go and terraform
+
+```
+bash
+mkdir tf_na_elementsw
+cd tf_na_elementsw
+
+# if you want a private installation, use
+export GO_INSTALL_DIR=`pwd`/go_install
+mkdir $GO_INSTALL_DIR
+# otherwise, go recommends to use
+export GO_INSTALL_DIR=/usr/local
+
+
+curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+tar -C $GO_INSTALL_DIR -xvf go1.14.1.linux-amd64.tar.gz
+
+export PATH=$PATH:$GO_INSTALL_DIR/go/bin
+
+curl -O https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip
+unzip terraform_0.12.24_linux_amd64.zip
+mv terraform $GO_INSTALL_DIR/go/bin
+```
+
+### Installing dependencies
+
+```
+# make sure git is installed
+which git
+
+export GOPATH=`pwd`
+go get github.com/fatih/structs
+go get github.com/hashicorp/terraform
+go get github.com/sirupsen/logrus
+go get github.com/x-cray/logrus-prefixed-formatter
+```
+
+Note getting the terraform package also builds and installs terraform in $GOPATH/bin.
+The version in go/bin is a stable release.
+
+### Cloning the NetApp provider repository and building the provider
+
+
+```
+mkdir -p $GOPATH/src/github.com/netapp
+cd $GOPATH/src/github.com/netapp
+git clone https://github.com/NetApp/terraform-provider-netapp-elementsw.git
+cd terraform-provider-netapp-elementsw
+make build
+mv $GOPATH/bin/terraform-provider-netapp-elementsw $GO_INSTALL_DIR/go/bin
+```
+
+The build step will install the provider in the $GOPATH/bin directory.
+You could leave it there to use the latest build of terraform.
+
+### Sanity check
+
+```
+cd examples/elementsw/
+terraform init
+```
+
+Should do nothing but indicate that `Terraform has been successfully initialized!`
