@@ -11,9 +11,9 @@ This example performs the following:
   [`elementsw_account` resource][ref-tf-elementsw-account].
 * Creates a number of volumes on the cluster tied to the account,
   using the [`elementsw_volume` resource][ref-tf-elementsw-volume].
-* Sets up a volume access group for the volumes, using the
+* Sets up a volume access group (VAG) for the volumes, using the
   [`elementsw_volume_access_group` resource][ref-tf-elementsw-volume-access-group].
-* Finally, creates an initiator tied to the volume access group and volumes using 
+* Finally, creates an initiator tied to the volume access group and volumes using
   the [`elementsw_initiator` resource][ref-tf-elementsw-initiator].
 
 [ref-tf-elementsw-account]: https://www.terraform.io/docs/providers/netapp/elementsw/r/account.html
@@ -23,7 +23,7 @@ This example performs the following:
 
 ## Requirements
 
-* A working HCI or SolidFire storage cluster.
+* A working NetApp HCI or SolidFire storage cluster.
 
 ## Usage Details
 
@@ -31,17 +31,17 @@ You can either clone the entire
 [terraform-provider-elementsw][ref-tf-elementsw-github] repository, or download the
 `provider.tf`, `variables.tf`, `resources.tf`, and
 `terraform.tfvars.example` files into a directory of your choice. Once done,
-edit the `terraform.tfvars.example` file, populating the fields with the
+run `terraform init`, edit the `terraform.tfvars.example` file, populating the fields with the
 relevant values, and then rename it to `terraform.tfvars`. Don't forget to
 configure your endpoint and credentials by either adding them to the
-`provider.tf` file, or by using enviornment variables. See
+`terraform.tfvars` file, or by using environment variables. See
 [here][ref-tf-elementsw-provider-settings] for a reference on provider-level
 configuration values.
 
 [ref-tf-elementsw-github]: https://github.com/terraform-providers/terraform-provider-netapp-elementsw
 [ref-tf-elementsw-provider-settings]: https://www.terraform.io/docs/providers/netapp/elementsw/index.html#argument-reference
 
-Once done, run `terraform init`, and `terraform plan` to review the plan, then
-`terraform apply` to execute. If you use Terraform 0.11.0 or higher, you can
-skip `terraform plan` as `terraform apply` will now perform the plan for you and
-ask you confirm the changes.
+Once done, run `terraform plan` to review the plan, then `terraform apply` to execute.
+
+If you use Terraform 0.11.0 or higher, you can skip `terraform plan` as `terraform apply` 
+will now perform the plan for you and ask you confirm the changes.
