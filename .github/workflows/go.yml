@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Terraform-Lint
+      uses: actionshub/terraform-lint@1.0.0
+
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
