@@ -43,5 +43,5 @@ configuration values.
 
 Once done, run `terraform plan` to review the plan, then `terraform apply` to execute.
 
-If you use Terraform 0.11.0 or higher, you can skip `terraform plan` as `terraform apply` 
+If you use Terraform 0.11.0 or higher, you can skip `terraform plan` as `terraform apply`
 will now perform the plan for you and ask you confirm the changes.
