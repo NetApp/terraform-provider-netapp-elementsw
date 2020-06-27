@@ -71,9 +71,9 @@ more][provider-vc] on provider version control.
 ## Prerequisites
 
 If you wish to work on the provider, you'll first need [Go][go-website]
-installed on your machine (version 1.14+ is **required** to build with 
-current dependencies). You'll also need to correctly setup a [GOPATH][gopath], 
-as well as adding `$GOPATH/bin` to your `$PATH`.
+installed on your machine (version 1.9+ is **required**). You'll also need to
+correctly setup a [GOPATH][gopath], as well as adding `$GOPATH/bin` to your
+`$PATH`.
 
 [go-website]: https://golang.org/
 [gopath]: http://golang.org/doc/code.html#GOPATH

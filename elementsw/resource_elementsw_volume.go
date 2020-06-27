@@ -133,7 +133,7 @@ func resourceElementSwVolumeCreate(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("total_size argument is required")
 	}
 
-	if v, ok := d.GetOk("enable512e"); ok {
+	if v, ok := d.GetOkExists("enable512e"); ok {
 		volume.Enable512E = v.(bool)
 	} else {
 		return fmt.Errorf("enable512e argument is required")
