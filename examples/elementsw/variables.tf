@@ -12,6 +12,7 @@ variable "elementsw_cluster" {
 
 variable "elementsw_api_version" {
   type = string
+  default = "10.0"
 }
 
 variable "volume_name" {
@@ -20,4 +21,8 @@ variable "volume_name" {
 
 variable "volume_size_list" {
   type = list
+  default = [
+  "1073741824",
+  "1073741824"
+  ]
 }
