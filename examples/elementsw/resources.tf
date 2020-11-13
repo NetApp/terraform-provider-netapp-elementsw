@@ -27,7 +27,7 @@ resource "elementsw_volume_access_group" test-group {
 resource "elementsw_initiator" test-initiator {
     provider = netapp-elementsw
     name = "iqn.1998-01.com.vmware:test-es65-7f17a50c"
-    alias = "testVAG"
+    alias = "testIQN"
     volume_access_group_id = elementsw_volume_access_group.test-group.id
     iqns = elementsw_volume.test-volume.*.iqn
 }
