@@ -22,7 +22,7 @@ variable "volume_name" {
 variable "volume_size_list" {
   type = list
   default = [
-  "1073741824",
-  "1073741824"
+    "1073741824",
+    "1073741824"
   ]
 }
