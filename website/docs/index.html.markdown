@@ -22,41 +22,45 @@ and therefore may undergo significant changes as the community improves it.
 ## Example Usage
 
 ```
-# Configure the ElementSW Provider
-provider "elementsw" {
-  username         = "${var.elementsw_username}"
-  password         = "${var.elementsw_password}"
-  elementsw_server = "${var.elementsw_server}"
-  api_version      = "${var.elementsw_api_version}"
+# Configure ElementSW provider
+provider "netapp-elementsw" {
+  username         = var.elementsw_username
+  password         = var.elementsw_password
+  elementsw_server = var.elementsw_cluster
+  api_version      = var.elementsw_api_version
 }
 
-# Create an account
-resource "elementsw_account" "main-account" {
-  username = "main"
+# Specify ElementSW resources
+resource "elementsw_account" test-account {
+  provider = netapp-elementsw
+  username = "testAccount"
 }
 
-# Create a volume tied to an account
-resource "elementsw_volume" "volume1" {
-  name       = "main-volume"
-  accountID  = "${elementsw_account.main-account.id}"
-  totalSize  = 10000000000
+resource "elementsw_volume" test-volume {
+  # Create N instances
+  count      = length(var.volume_size_list)
+  provider   = netapp-elementsw
+  name       = "${var.volume_name}-${count.index}"
+  account    = elementsw_account.test-account.id
+  total_size = var.volume_size_list[count.index]
   enable512e = true
-  minIOPS    = 50
-  maxIOPS    = 10000
-  burstIOPS  = 10000
+  min_iops   = 100
+  max_iops   = 500
+  burst_iops = 1000
 }
 
-# Create a volume access group for the volume
-resource "elementsw_volume_access_group" "main-group" {
-  name    = "main-volume-access-group"
-  volumes = ["${elementsw_volumes.volume1.id}"]
+resource "elementsw_volume_access_group" test-group {
+  provider = netapp-elementsw
+  name     = "testGroup"
+  volumes  = elementsw_volume.test-volume.*.id
 }
 
-# Create an initiator for the volume access group
-resource "elementsw_initiator" "main-initiator" {
-  name = "qn.1998-01.com.vmware:test-terraform-00000000"
-  alias = "Main Initiator"
-  volumeAccessGroupID = "${elementsw_volume_access_group.main-group.id}"
+resource "elementsw_initiator" test-initiator {
+  provider               = netapp-elementsw
+  name                   = "iqn.1998-01.com.vmware:test-terraform-000000"
+  alias                  = "testIQN"
+  volume_access_group_id = elementsw_volume_access_group.test-group.id
+  iqns                   = elementsw_volume.test-volume.*.iqn
 }
 ```
 
@@ -64,16 +68,15 @@ resource "elementsw_initiator" "main-initiator" {
 
 The following arguments are used to configure the ElementSW Provider:
 
-* `username` - (Required) This is the username for ElementSW API operations.
-* `password` - (Required) This is the password for ElementSW API operations.
-* `elementsw_server` - (Required) This is the ElementSW cluster name for ElementSW 
+* `elementsw_username` - (Required) This is the username for ElementSW API operations.
+* `elementsw_password` - (Required) This is the password for ElementSW API operations.
+* `elementsw_cluster` - (Required) This is the ElementSW cluster MVIP for ElementSW
   API operations.
-* `api_version` - (Required) This is the ElementSW cluster version for ElementSW
+* `elementsw_api_version` - (Required) This is the ElementSW API version for ElementSW
   API operations.
 
 ## Required Privileges
 
-These settings were tested with NetApp ElementSW Element OS 11.1
+These settings were tested with NetApp ElementSW (Element OS, SolidFire) 11.7
 For additional information on roles and permissions, please refer to official
 ElementSW documentation.
-

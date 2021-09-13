@@ -1,3 +1,28 @@
+<!-- TOC -->
+
+- [Terraform NetApp ElementSW Provider](#terraform-netapp-elementsw-provider)
+    - [Naming Conventions](#naming-conventions)
+    - [Using the Provider](#using-the-provider)
+        - [Provider Documentation](#provider-documentation)
+        - [Controlling the provider version](#controlling-the-provider-version)
+    - [Building The Provider](#building-the-provider)
+        - [Prerequisites](#prerequisites)
+        - [Cloning the Project](#cloning-the-project)
+        - [Running the Build](#running-the-build)
+        - [Installing the Local Plugin](#installing-the-local-plugin)
+    - [Developing the Provider](#developing-the-provider)
+    - [Testing the Provider](#testing-the-provider)
+        - [Configuring Environment Variables](#configuring-environment-variables)
+            - [Using the .tf-elementsw-devrc.mk file](#using-the-tf-elementsw-devrcmk-file)
+        - [Running the Acceptance Tests](#running-the-acceptance-tests)
+        - [Walkthrough example](#walkthrough-example)
+            - [Installing Go and Terraform](#installing-go-and-terraform)
+            - [Installing dependencies](#installing-dependencies)
+            - [Cloning the NetApp provider repository and building the provider](#cloning-the-netapp-provider-repository-and-building-the-provider)
+            - [Sanity check](#sanity-check)
+
+<!-- /TOC -->
+
 # Terraform NetApp ElementSW Provider
 
 This is the repository for the Terraform NetApp ElementSW Provider, which can be used with Terraform to configure resources on NetApp HCI or SolidFire storage clusters.
@@ -9,50 +34,53 @@ For general information about Terraform, visit the [official website][tf-website
 
 This provider plugin was initially developed by the SolidFire team for use with internal projects. The provider plugin was refactored to be published and maintained.
 
-This provider was tested with ElementSW versions ranging from 11.1 up to 12.2.
+This provider was tested with ElementSW versions ranging from 11.1 up to 12.
 
 ## Naming Conventions
 
-ElementSW does not require resource names to be unique.  They are considered as 'labels' and resources in ElementSW are uniquely identified by 'ids'.  However these ids are not
-user friendly, and as they are generated on the fly, they make it difficult to track resources and automate.
+ElementSW does not require resource names to be unique.  They are considered as 'labels' and resources in ElementSW are uniquely identified by 'ids'.  However these ids are not user friendly, and as they are generated on the fly, they make it difficult to track resources and automate.
 
-This provider assumes that resource names are unique, and enforces it within its scope. This is not an issue if everything is managed through Terraform, but could raise
-conflicts if the rule is not respected outside of Terraform.
+This provider assumes that resource names are unique, and enforces it within its scope. This is not an issue if everything is managed through Terraform, but could raise conflicts if the rule is not respected outside of Terraform.
 
 ## Using the Provider
 
 The current version of this provider requires Terraform 0.12 or higher to run.
 
-You will need to build the provider before being able to use it (see [the section below](#building-the-provider))
+- Newer Terraform releases such as 1.0.6 can download the provider from [Terraform Registry](https://registry.terraform.io/) so there's no need to build it from source. A complete how-to based on Terraform 1.0.6 and SolidFire 12.3 can be found [here](https://github.com/NetApp/terraform-provider-netapp-elementsw/tree/master/examples/elementsw).
+- Users of older Terraform releases such as Terraform 0.12 may need to build the provider from source before being able to use it, and load it locally (see [the section below](#building-the-provider)).
 
 Note that you need to run `terraform init` to fetch the provider before deploying.
 
 ### Provider Documentation
 
-<TBD> The provider is documented [here][tf-elementsw-docs].
+The provider is documented [here](https://registry.terraform.io/providers/NetApp/netapp-elementsw/latest/docs).
 
 Check the provider documentation for details on entering your connection information and how to get started with writing configuration for NetApp ElementSW resources.
 
-[tf-elementsw-docs](website/docs/index.html.markdown)
-
 ### Controlling the provider version
 
-Note that you can also control the provider version. This requires the use of a `provider` block in your Terraform configuration if you have not added one already.
+Note that you can also control the provider version. Since Terraform 0.13 this requires the use of a `required_providers` block in your Terraform configuration.
 
-The syntax is as follows:
+The syntax that loads the provider from Terraform Registry is as follows:
 
 ```hcl
-provider "netapp-elementsw" {
-  version = "~> 1.1"
-  ...
+required_providers {
+  netapp-elementsw = {
+    version = "~> 20.11"
+    source  = "NetApp/netapp-elementsw"
+  }
 }
 ```
 
-Version locking uses a pessimistic operator, so this version lock would mean anything within the 1.x namespace, including or after 1.1.0. Read more [here][provider-vc] on provider version control.
+Version locking uses a pessimistic operator, so this version lock would mean anything within the 20.11 namespace, including or after 20.11.0. Read more [here][provider-vc] on provider version control.
 
-[provider-vc]: https://www.terraform.io/docs/configuration/providers.html#provider-versions
+For offline loading please see the walk-through for building from source.
+
+[provider-vc]: https://www.terraform.io/docs/language/providers/requirements.html#version
 
 ## Building The Provider
+
+This section is intended for developers. Regular users can start with this ready-to-use [example](https://github.com/NetApp/terraform-provider-netapp-elementsw/tree/master/examples/elementsw).
 
 ### Prerequisites
 
@@ -108,7 +136,7 @@ See [Building the Provider](#building-the-provider) for details on building the 
 
 ## Testing the Provider
 
-**NOTE:** Testing the NetApp ElementSW provider is currently a complex operation as it requires having an ElementSW endpoint to test against, which should be hosting a standard configuration for a HCI or SolidFire cluster.
+**NOTE:** Testing the NetApp ElementSW provider is currently a complex operation as it requires having an ElementSW endpoint to test against, which should be hosting a standard configuration for a HCI or SolidFire cluster. If you have a NetApp Support account, you may instead download Element Demo VM 12 from the Tools section, and deploy a singleton VM-based SolidFire cluster on VMware.
 
 ### Configuring Environment Variables
 
@@ -134,9 +162,11 @@ make testacc TESTARGS="-run=TestAccElementSwVolume"
 
 This following example would run all of the acceptance tests matching `TestAccElementSwVolume`. Change this for the specific tests you want to run.
 
-## Walkthrough example
+### Walkthrough example
 
-### Installing Go and Terraform
+If you are not building from source or want to download provider from online Terraform Registry, please refer to README in the subdirectory examples/elementsw.
+
+#### Installing Go and Terraform
 
 ```sh
 bash
@@ -160,7 +190,7 @@ unzip terraform_0.12.24_linux_amd64.zip
 mv terraform $GO_INSTALL_DIR/go/bin
 ```
 
-### Installing dependencies
+#### Installing dependencies
 
 ```sh
 # make sure git is installed
@@ -176,7 +206,7 @@ go get github.com/x-cray/logrus-prefixed-formatter
 Note getting the terraform package also builds and installs terraform in $GOPATH/bin.
 The version in go/bin is a stable release.
 
-### Cloning the NetApp provider repository and building the provider
+#### Cloning the NetApp provider repository and building the provider
 
 ```sh
 mkdir -p $GOPATH/src/github.com/netapp
@@ -187,11 +217,20 @@ make build
 mv $GOPATH/bin/terraform-provider-netapp-elementsw $GO_INSTALL_DIR/go/bin
 ```
 
-The build step will install the provider in the $GOPATH/bin directory. For Terraform v0.11 and v0.12 you could use it from there, for version v0.13 copy it to `/usr/share/terraform/providers/netapp.com/` (see the provided example).
+The build step will install the provider in the $GOPATH/bin directory. For Terraform 0.11 and 0.12 you could use it from there, for version 0.13 and later, copy it to `/usr/share/terraform/providers/netapp.com/` and load it with:
 
-### Sanity check
+```hcl
+required_providers {
+  netapp-elementsw = {
+    version = "0.1.0"
+    source = "netapp.com/elementsw/netapp-elementsw"
+  }
+}
+```
 
-```shell
+#### Sanity check
+
+```sh
 cd examples/elementsw/
 terraform init
 ```
