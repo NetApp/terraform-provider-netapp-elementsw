@@ -26,7 +26,7 @@ and therefore may undergo significant changes as the community improves it.
 provider "netapp-elementsw" {
   username         = var.elementsw_username
   password         = var.elementsw_password
-  elementsw_server = var.elementsw_cluster
+  elementsw_server = var.elementsw_server
   api_version      = var.elementsw_api_version
 }
 
@@ -68,15 +68,15 @@ resource "elementsw_initiator" test-initiator {
 
 The following arguments are used to configure the ElementSW Provider:
 
-* `elementsw_username` - (Required) This is the username for ElementSW API operations.
-* `elementsw_password` - (Required) This is the password for ElementSW API operations.
-* `elementsw_cluster` - (Required) This is the ElementSW cluster MVIP for ElementSW
+* `username` - (Required) This is the username for ElementSW API operations.
+* `password` - (Required) This is the password for ElementSW API operations.
+* `elementsw_server` - (Required) This is the ElementSW cluster MVIP for ElementSW
   API operations.
-* `elementsw_api_version` - (Required) This is the ElementSW API version for ElementSW
+* `api_version` - (Required) This is the ElementSW API version for ElementSW
   API operations.
 
 ## Required Privileges
 
-These settings were tested with NetApp ElementSW (Element OS, SolidFire) 11.7
+These settings were tested with NetApp ElementSW (Element OS, SolidFire) 11.7.
 For additional information on roles and permissions, please refer to official
 ElementSW documentation.

@@ -54,7 +54,7 @@ Because some variables in this example have values set in `resources.tf` and som
 terraform apply \
   -var="elementsw_username=admin" \
   -var="elementsw_password=admin" \
-  -var="elementsw_cluster=192.168.1.34" \
+  -var="elementsw_server=192.168.1.34" \
   -var="volume_name=testVol" \
   -var="volume_size_list=[1073742000,1073742000]"
 ```

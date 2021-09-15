@@ -10,7 +10,7 @@ variable "elementsw_password" {
   description = "The password of the Element cluster admin."
 }
 
-variable "elementsw_cluster" {
+variable "elementsw_server" {
   type        = string
   description = "Management Virtual IP (MVIP) of the Element cluster (IPv4 or FQDN)."
 }
