@@ -1,16 +1,11 @@
-elementsw_username = "admin"
-
-elementsw_password = "admin"
-
-elementsw_cluster = "192.168.1.30"
-
-elementsw_api_version = "10.3"
-
-volume_name = "testVol"
-
-volume_size_list = [
-    "107374182400",
-    "107374182400",
-    "107374182400",
-    "107374182400"
+elementsw_username    = "admin"
+elementsw_password    = "admin"
+elementsw_server      = "192.168.1.30"
+elementsw_api_version = "11.7"
+elementsw_initiator   = "iqn.1998-01.com.netapp:test-terraform-000000"
+volume_name           = "testVol"
+volume_size_list      = [
+  "10737418240",
+  "10737418240",
+  "10737418240"
 ]
