@@ -54,7 +54,7 @@ Because some variables in this example have values set in `resources.tf` and som
 terraform apply \
   -var="elementsw_username=admin" \
   -var="elementsw_password=admin" \
-  -var="elementsw_server=192.168.1.34" \
+  -var="elementsw_cluster=192.168.1.34" \
   -var="volume_name=testVol" \
   -var="volume_size_list=[1073742000,1073742000]"
 ```
@@ -72,9 +72,28 @@ cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 ```
 
-Now run `terraform apply` and `terraform destroy` again, but you may choose to omit (unless you want to override their values from command line) certain variables set in `terraform.tfvars`.
+Now run `terraform plan` followed by `terraform apply`. You may still choose to override certain default variables or variables set in `terraform.tfvars`.
 
-Once done, optionally run `terraform plan` to review the plan, then use `terraform apply` to execute. Destroy with `terraform destroy`, the same as earlier.
+Destroy with `terraform destroy`, the same as in the first example.
+
+### Overriding map values from the CLI
+
+This example only shows how values for two maps (QoS and IQN) can be provided from the CLI (Bash shell on Linux). Variations of this approach may be required for different OS.
+
+```sh
+terraform apply \
+  -var="elementsw_username=admin" \
+  -var="elementsw_password=admin" \
+  -var="elementsw_cluster=192.168.1.34" \
+  -var="volume_name=testVol" \
+  -var="volume_size_list=[1073742000,1073742000,1073742000]" \
+  -var="sectorsize_512e=false" \
+  -var="qos={min=100,max=200,burst=300}" \
+  -var="volume_name=dc1-testVol-master" \
+  -var="elementsw_initiator={name=\"iqn.1998-01.com.vmware:test-cluster-000001\",alias=\"testNode1\"}" \
+  -var="voume_group_name=testTenant" \
+  -var="elementsw_tenant_name=testCluster01"
+```
 
 ### Add own validation rules
 
@@ -94,7 +113,7 @@ variable "volume_name" {
 }
 ```
 
-Another useful example is a validation rule for acceptable volume sizes (min 1Gi, max 16TiB). We could make storage QoS settings variables and add similar validation rules for them, too.
+Another useful example is a validation rule for acceptable volume sizes (min 1Gi, max 16TiB) - see `variables.tf`.
 
 ### Extend
 
