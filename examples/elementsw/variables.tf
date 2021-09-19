@@ -27,7 +27,7 @@ variable "elementsw_tenant_name" {
   description = "The Element tenant name."
 }
 
-variable "voume_group_name" {
+variable "volume_group_name" {
   type        = string
   default     = "test-vag"
   description = "The volume group name (VAG) of the Element cluster."

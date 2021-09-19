@@ -91,7 +91,7 @@ terraform apply \
   -var="qos={min=100,max=200,burst=300}" \
   -var="volume_name=dc1-testVol-master" \
   -var="elementsw_initiator={name=\"iqn.1998-01.com.vmware:test-cluster-000001\",alias=\"testNode1\"}" \
-  -var="voume_group_name=testTenant" \
+  -var="volume_group_name=testTenant" \
   -var="elementsw_tenant_name=testCluster01"
 ```
 

@@ -19,7 +19,7 @@ resource "elementsw_volume" test-volume {
 
 resource "elementsw_volume_access_group" test-group {
   provider = netapp-elementsw
-  name     = var.voume_group_name
+  name     = var.volume_group_name
   volumes  = elementsw_volume.test-volume.*.id
 }
 
