@@ -1,7 +1,7 @@
 # Specify ElementSW resources
 resource "elementsw_account" test-account {
   provider = netapp-elementsw
-  username = "testAccount"
+  username = var.elementsw_tenant_name 
 }
 
 resource "elementsw_volume" test-volume {
@@ -11,22 +11,22 @@ resource "elementsw_volume" test-volume {
   name       = "${var.volume_name}-${count.index}"
   account    = elementsw_account.test-account.id
   total_size = var.volume_size_list[count.index]
-  enable512e = true
-  min_iops   = 100
-  max_iops   = 500
-  burst_iops = 1000
+  enable512e = var.sectorsize_512e
+  min_iops   = var.qos.min
+  max_iops   = var.qos.max
+  burst_iops = var.qos.burst
 }
 
 resource "elementsw_volume_access_group" test-group {
   provider = netapp-elementsw
-  name     = "testGroup"
+  name     = var.volume_group_name
   volumes  = elementsw_volume.test-volume.*.id
 }
 
 resource "elementsw_initiator" test-initiator {
   provider               = netapp-elementsw
-  name                   = "iqn.1998-01.com.vmware:test-terraform-000000"
-  alias                  = "testIQN"
+  name                   = var.elementsw_initiator.name
+  alias                  = var.elementsw_initiator.alias
   volume_access_group_id = elementsw_volume_access_group.test-group.id
   iqns                   = elementsw_volume.test-volume.*.iqn
 }
