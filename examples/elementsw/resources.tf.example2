@@ -1,7 +1,9 @@
 # Specify ElementSW resources
 resource "elementsw_account" test-account {
-  provider = netapp-elementsw
-  username = var.elementsw_tenant_name 
+  provider         = netapp-elementsw
+  username         = var.elementsw_tenant_name 
+  target_secret    = var.elementsw_tenant_target_secret
+  initiator_secret = var.elementsw_tenant_initiator_secret 
 }
 
 resource "elementsw_volume" test-volume {

@@ -1,21 +1,9 @@
 # NetApp ElementSW v20.11 Example
 
-This repository is designed to demonstrate the capabilities of the [Terraform
+Examples in resources.tf.example1 and resources.tf.example2 are designed to demonstrate the capabilities of the [Terraform
 NetApp ElementSW Provider][ref-tf-elementsw].
 
 [ref-tf-elementsw]: https://registry.terraform.io/providers/NetApp/netapp-elementsw/latest
-
-On `terraform apply`, this example performs the following:
-
-* Sets up an account. This uses the `elementsw_account` resource
-* Creates a number of volumes on the cluster tied to the account,
-  using the `elementsw_volume` resource.
-* Sets up a volume access group (VAG) for the volumes, using the
-  `elementsw_volume_access_group` resource.
-* Finally, creates an initiator tied to the volume access group and volumes using
-  the `elementsw_initiator` resource.
-
-On `terraform destroy`, it removes all the resources (volumes are purged, not just deleted).
 
 ## Requirements
 
@@ -29,26 +17,51 @@ Clone the Git repository and change directory to the ElementSW examples director
 ```sh
 git clone https://github.com/NetApp/terraform-provider-netapp-elementsw
 cd terraform-provider-netapp-elementsw/examples/elementsw
-terraform init
 ```
 
-`terraform init` should download ElementSW provider to `.terraform` in the current path.
+**NOTE:** Before you continue make sure that volume names, sizes, IQN and other variables from the examples do not conflict with your production environment. Pay special attention when deleting resources because there is no undo. As mentioned in the main README file, you may download Element (SolidFire) Demo VM for safe experimenting.
 
-**NOTE:** Before you continue make sure that volume names, sizes, IQN and other variables from the examples do not conflict with your production environment. Pay special attention when referencing volumes when volumes get deleted earlier than others (so that `testVol-5` becomes one of only three volumes you're working with, and you need to delete the second volume named `testVol-3`). As mentioned in the main README file, you may download Element (SolidFire) Demo VM for safe experimenting.
+### Example one: create an account and volumes for CHAP access
 
-What's in the files?
+To try the first example, `resources.tf.example1`, copy the file to `resources.tf` and examine its contents including tenant and volume names so that you can adjust them if they conflict with your current environment.
 
-- provider.tf - provider settings
-- resources.tf - description of resources the provider can manage
-- variables.tf - description of some variables that may be used with teh provider (also see terraform.tfvars.example)
-- version.tf - provider version control file that downloads ElementSW provider from Terraform Registry. To load own copy, please see the main README file (about building from source)
-- terraform.tfvars.example - sample file with variables
+Run `terraform init` to doownload NetApp ElementSW Provider.
 
-### Without terraform.tfvars
+On `terraform apply`, this example will perform the following:
 
-Without a variables file we need to make sure Terraform has all of the required variables.
+* Set up a tenant account. This uses the `elementsw_account` resource.
+* Creates two volumes for the account using the `elementsw_volume` resource.
 
-Because some variables in this example have values set in `resources.tf` and some have defaults defined in `variables.tf`, the number of variables we have to provide via command line can be less than the total number of required variables. For example, `elementsw_username` is already defined in `variables.tf` and `elementsw_initiator` in `resources.tf`, but we can still override the value of former through the CLI.
+`terraform apply` requires certain inputs. You can provide them in `terraform.tfvars` (see `terraform.tfvars.example`) or pass them from the CLI like so:
+
+```sh
+terraform apply \
+  -var="elementsw_username=admin" \
+  -var="elementsw_password=admin" \
+  -var="elementsw_cluster=192.168.1.34"
+```
+
+On `terraform destroy`, all the resources will be deleted (volumes are purged, not just deleted) without the option to undo. You may need to provide the same variables as above - SolidFire cluster username, password and Management Virtual IP.
+
+After first successful apply, make changes to `resources.tf` and run apply again.
+
+If you want to try the second example, remember to destroy resources with `terraform destroy` and then copy the second example, `resources.tf.example2`, over `resources.tf` (if you had it from the first example). Without a clean-up you may encounter errors due to overlap between resources in the two examples.
+
+### Example two: create an account and volumes VAG access
+
+The second example demonstrates the use of Volume Access Group (VAG) and Initiator resource to creates two additional resources:
+
+* Volume Access Group (VAG) for the volumes, using the `elementsw_volume_access_group` resource.
+* Initiator tied to the VAG and the volumes using the `elementsw_initiator` resource.
+
+It also does two things differently from the first example:
+
+* Uses a list of volumes, which is simple but less flexible.
+* Lets the SolidFire API to automatically generate tenant secrets - also simple, but less flexible.
+
+Because some variables in this example have values set in `resources.tf` and some have defaults defined in `variables.tf`, the number of variables we have to provide via command line can be less than total number of required variables. For example, `elementsw_username` is already defined in `variables.tf` and `elementsw_initiator` in `resources.tf`, but we can still override the value of former through the CLI.
+
+Like in the first example, check the values of variables in these files and change them to avoid any conflict with existing resources.
 
 ```sh
 terraform apply \
@@ -59,24 +72,22 @@ terraform apply \
   -var="volume_size_list=[1073742000,1073742000]"
 ```
 
-Note that in this example `volume_size_list` defaults to `[]` (empty list) in  to avoid potential problems when testing. You can change the default value if you want to change this behavior.
+Note that in this example `volume_size_list` defaults to `[]` (empty list) in order to avoid potential problems. You can change the default value if you want to change this behavior.
 
-To destroy resources just created, run `terraform destroy` (you need to provide the same set of variables).
+To destroy resources just created, run `terraform destroy` (you may need to provide the first three variables).
 
-### With terraform.tfvars
-
-Descend to examples/elementsw subdirectory and use the sample file to create `terraform.tfvars` and then edit the new file to match your environment:
+Descend to examples/elementsw subdirectory and use the sample file with variables to create `terraform.tfvars` and then edit the new file to match your environment:
 
 ```sh
 cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 ```
 
-Now run `terraform plan` followed by `terraform apply`. You may still choose to override certain default variables or variables set in `terraform.tfvars`.
+Now run `terraform plan` followed by `terraform apply`. You can omit most variables, but beware of security implications of having `elementsw_password` in plain text file. You may still choose to override certain default variables or variables set in `terraform.tfvars`, especially if they are similar or identical to existing resources.
 
-Destroy with `terraform destroy`, the same as in the first example.
+Destroy with `terraform destroy`, the same way as before.
 
-### Overriding map values from the CLI
+#### Overriding variable values from the CLI
 
 This example only shows how values for two maps (QoS and IQN) can be provided from the CLI (Bash shell on Linux). Variations of this approach may be required for different OS.
 
@@ -97,7 +108,7 @@ terraform apply \
 
 ### Add own validation rules
 
-To implement own naming rules or conventions, feel free to add Terraform validation rules.
+To implement own naming rules or conventions, feel free to create Terraform validation rules.
 
 In this example we want to ensure that volume names begin with `dc1`.
 
@@ -113,7 +124,7 @@ variable "volume_name" {
 }
 ```
 
-Another useful example is a validation rule for acceptable volume sizes (min 1Gi, max 16TiB) - see `variables.tf`.
+`variables.tf` contains few other example of validation rules (acceptable volume sizes (min 1Gi, max 16TiB), initiator secrets, and volume QoS values).
 
 ### Extend
 
