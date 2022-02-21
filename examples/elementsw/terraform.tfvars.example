@@ -2,20 +2,20 @@ elementsw_username    = "admin"
 elementsw_password    = "admin"
 elementsw_cluster     = "192.168.1.30"
 elementsw_api_version = "11.7"
-elementsw_initiator   = {
-  name="iqn.1998-01.com.vmware:test-cluster-000001"
-  alias="testNode1"
+elementsw_initiator = {
+  name  = "iqn.1998-01.com.vmware:test-cluster-000001"
+  alias = "testNode1"
 }
 volume_name           = "testVol"
 sectorsize_512e       = true
 volume_group_name     = "testCluster01"
 elementsw_tenant_name = "testCluster01"
-qos                   = {
-  min=100
-  max=200
-  burst=300
+qos = {
+  min   = 100
+  max   = 200
+  burst = 300
 }
-volume_size_list      = [
+volume_size_list = [
   "10737418240",
   "10737418240",
   "10737418240"
