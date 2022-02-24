@@ -1,0 +1,30 @@
+resource "elementsw_account" "k8s_account" {
+  provider         = netapp-elementsw
+  username         = var.elementsw_tenant_name
+  target_secret    = var.elementsw_tenant_target_secret
+  initiator_secret = var.elementsw_tenant_initiator_secret
+}
+
+locals {
+  volumes = {
+    "etcd1" = { size = 1073742000, sectorsize_512e = "false", qos = { min = "100", max = "150", burst = "200" } },
+    # "etcd2" = { size = 1073742000, sectorsize_512e="false", qos = {min = "100", max = "150", burst = "200"} },
+    "etcd3" = { size = 3073742000, sectorsize_512e = "false", qos = { min = "100", max = "150", burst = "200" } }
+  }
+}
+
+resource "elementsw_volume" "volume" {
+  for_each   = local.volumes
+  provider   = netapp-elementsw
+  name       = each.key
+  account    = elementsw_account.k8s_account.id
+  total_size = each.value.size
+  enable512e = each.value.sectorsize_512e
+  min_iops   = each.value.qos.min
+  max_iops   = each.value.qos.max
+  burst_iops = each.value.qos.burst
+}
+
+output "elementsw_volume" {
+  value = elementsw_volume.volume
+}
