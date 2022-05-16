@@ -35,3 +35,7 @@ jobs:
 
     - name: Build
       run: go build -v .
+ 
+    - name: terraform-docs
+      uses: Dirrk/terraform-docs@v1.0.7
+
