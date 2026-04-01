@@ -13,17 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+      with:
+        egress-policy: audit
+
     - name: Terraform-Lint
-      uses: actionshub/terraform-lint@1.0.0
+      uses: actionshub/terraform-lint@0a86dd0b510e5fd6ab5b13179d6979dc82e5cb8e # 1.0.0
 
     - name: Set up Go 1.13
-      uses: actions/setup-go@v1
+      uses: actions/setup-go@0caeaed6fd66a828038c2da3c0f662a42862658f # v1.1.3
       with:
         go-version: 1.13
       id: go
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
     - name: Get dependencies
       run: |
